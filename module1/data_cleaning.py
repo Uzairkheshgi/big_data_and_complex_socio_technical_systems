@@ -16,20 +16,19 @@ COLUMNS = {
 
 
 def load_and_clean(path: Path = DATA_PATH) -> pd.DataFrame:
-    """Step 1: load the CSV, fix types and drop rows without a numeric rating."""
+    """load the CSV, fix types and drop rows without a numeric rating."""
     df = pd.read_csv(path).rename(columns=COLUMNS)
     raw_rows = len(df)
 
+    #Convert date and rating columns to appropriate types, coerce errors to NaT/NaN
     df["date"] = pd.to_datetime(df["date"], format="%d %B %Y", errors="coerce")
-    df["useful_votes"] = pd.to_numeric(df["useful_votes"], errors="coerce")
-    df["total_votes"] = pd.to_numeric(df["total_votes"], errors="coerce")
     df["rating"] = pd.to_numeric(df["rating"], errors="coerce")
 
-    df = df.dropna(subset=["rating", "useful_votes", "total_votes"])
-    df = df.astype({"rating": int, "useful_votes": int, "total_votes": int})
+    df = df.dropna(subset=["rating"])
+    df["rating"] = df["rating"].astype(int)
 
-    df["title"] = df["title"].fillna("").str.strip()
-    df["review"] = df["review"].fillna("").str.strip()
+    df["title"] = df["title"].str.strip()
+    df["review"] = df["review"].str.strip()
     df["review_length"] = df["review"].str.split().str.len()
 
     print(f"Loaded {raw_rows} rows, kept {len(df)} with a valid rating, "
