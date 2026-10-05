@@ -15,6 +15,15 @@ def compare_ratings(df: pd.DataFrame) -> dict:
 
 
 def simulate_attack(df: pd.DataFrame, sizes, rating: int) -> pd.DataFrame:
-    """Both ratings after adding each number of fake reviews in `sizes`."""
+    """Plain and weighted rating side by side after adding each number of fake reviews in `sizes`.
+
+    `improvement_%` is how much less the weighted rating moved than the plain average.
+    """
     rows = {n: compare_ratings(add_fake_reviews(df, n, rating)) for n in sizes}
-    return pd.DataFrame(rows).T.rename_axis("fake_reviews")
+    result = pd.DataFrame(rows).T.rename_axis("fake_reviews")
+
+    base = compare_ratings(df)
+    result["plain_change"] = result["plain"] - base["plain"]
+    result["weighted_change"] = result["weighted"] - base["weighted"]
+    result["improvement_%"] = (1 - result["weighted_change"] / result["plain_change"]) * 100
+    return result
