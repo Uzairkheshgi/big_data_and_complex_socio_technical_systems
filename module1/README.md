@@ -19,6 +19,14 @@ cd big_data_and_complex_socio_technical_systems
 uv sync
 ```
 
+## Data
+
+The data is not in the repo. Place the CSV here, with exactly this file name:
+
+```
+module1/data/STS Module 1 Team Task Data.csv
+```
+
 ## Run
 
 Linux / macOS:
